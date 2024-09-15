@@ -2,6 +2,7 @@
 
 #include <windows.h>
 
+
 // Function to add menus
 void AddMenus(HWND hWnd);
 

@@ -1,6 +1,7 @@
 #include "drawings.h"
 #include <windows.h>
 #include "statika.h"
+#include <array>
 
 using namespace statika;
 
@@ -33,7 +34,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 	int endX = margin + drawableLength; // X coordinate for the end of the beam
 
 	//Suport A
-	POINT triangleA[3];
+	std::array<POINT,3> triangleA;
 
 	// Define the points for the triangle
 	triangleA[0].x = margin; // Top of the triangle (aligned with beam start)
@@ -46,7 +47,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 	triangleA[2].y = beamY + triangleHeight;
 
 	// Draw the triangle using the Polygon function
-	Polygon(hdc, triangleA, 3);
+	Polygon(hdc, triangleA.data(), 3);
 
 	// Draw text above the triangle A
 	const wchar_t* supportText = L"A";
@@ -61,7 +62,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 	TextOutW(hdc, textX, textY, supportText, wcslen(supportText));
 
 	// Support B
-	POINT triangleB[3];
+	std::array<POINT,3> triangleB;
 
 	// Define the points for the triangle
 	triangleB[0].x = endX; // Top of the triangle (aligned with beam end)
@@ -74,7 +75,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 	triangleB[2].y = beamY + triangleHeight;
 
 	// Draw the triangle using the Polygon function
-	Polygon(hdc, triangleB, 3);
+	Polygon(hdc, triangleB.data(), 3);
 
 	// Draw text above the triangle
 	const wchar_t* supportTextB = L"B";
@@ -142,7 +143,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 	int forceYPosition = margin + drawableLength * force.Fy_x / beam.L;
 
 	//Arrow
-	POINT arrowForceY[3];
+	std::array<POINT,3> arrowForceY;
 
 	//Arrow dimensions
 	int arrowForceHeight = 15; // Adjust the height of the triangle
@@ -214,7 +215,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		}
 
 		// Draw the arrow
-		Polygon(hdc, arrowForceY, 3);
+		Polygon(hdc, arrowForceY.data(), 3);
 
 		//Draw the dimension line for force
 		// Draw a line beneath the beam
@@ -261,7 +262,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 	int forceXPosition = margin + drawableLength * force.Fx_x / beam.L;
 
 	// Arrow
-	POINT arrowForceX[3];
+	std::array<POINT,3> arrowForceX;
 
 	// Arrow dimensions
 	int arrowForceXHeight = 15; // Adjust the height of the triangle
@@ -301,7 +302,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		}
 
 		// Draw the horizontal force arrow
-		Polygon(hdc, arrowForceX, 3);
+		Polygon(hdc, arrowForceX.data(), 3);
 
 		int lineOffsetForceX = 5;  // Distance from the force where the text will be drawn
 		// Prepare a buffer to store the text of force
@@ -373,7 +374,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 
 
 	// Calculate the arrow position depending on the moment direction (clockwise or counterclockwise)
-	POINT arrowMoment[3]; // Points to form the arrowhead triangle
+	std::array<POINT,3> arrowMoment; // Points to form the arrowhead triangle
 
 	int arrowMomentSize = 10;
 
@@ -416,7 +417,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		}
 
 		// Draw the arrowhead (triangle)
-		Polygon(hdc, arrowMoment, 3);
+		Polygon(hdc, arrowMoment.data(), 3);
 
 		int lineOffsetMoment = 40;  // Distance from the moment where the text will be drawn
 		// Prepare a buffer to store the text of moment
@@ -486,7 +487,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 	// Draw the uniform load
 
 	//Arrow
-	POINT arrowUniformLoad[3];
+	std::array<POINT,3> arrowUniformLoad;
 
 	//Arrow dimensions
 	int arrowULHeight = 5; // Adjust the height of the triangle
@@ -529,7 +530,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 			}
 
 			// Draw the arrow (triangle)
-			Polygon(hdc, arrowUniformLoad, 3);
+			Polygon(hdc, arrowUniformLoad.data(), 3);
 
 			// Move to the next section
 			counter += uniformLoadSection;
@@ -678,7 +679,7 @@ void DrawInternalMoments(HDC hdc, RECT clientRect, const Beam& beam, StaticEquil
 	int endX = margin + drawableLength; // X coordinate for the end of the beam
 
 	//Suport A
-	POINT triangleA[3];
+	std::array<POINT,3> triangleA;
 
 	// Define the points for the triangle
 	triangleA[0].x = margin; // Top of the triangle (aligned with beam start)
@@ -691,7 +692,7 @@ void DrawInternalMoments(HDC hdc, RECT clientRect, const Beam& beam, StaticEquil
 	triangleA[2].y = beamY + triangleHeight;
 
 	// Draw the triangle using the Polygon function
-	Polygon(hdc, triangleA, 3);
+	Polygon(hdc, triangleA.data(), 3);
 
 	// Draw text above the triangle A
 	const wchar_t* supportText = L"A";
@@ -706,7 +707,7 @@ void DrawInternalMoments(HDC hdc, RECT clientRect, const Beam& beam, StaticEquil
 	TextOutW(hdc, textX, textY, supportText, wcslen(supportText));
 
 	// Support B
-	POINT triangleB[3];
+	std::array<POINT,3> triangleB;
 
 	// Define the points for the triangle
 	triangleB[0].x = endX; // Top of the triangle (aligned with beam end)
@@ -719,7 +720,7 @@ void DrawInternalMoments(HDC hdc, RECT clientRect, const Beam& beam, StaticEquil
 	triangleB[2].y = beamY + triangleHeight;
 
 	// Draw the triangle using the Polygon function
-	Polygon(hdc, triangleB, 3);
+	Polygon(hdc, triangleB.data(), 3);
 
 	// Draw text above the triangle
 	const wchar_t* supportTextB = L"B";
@@ -748,7 +749,7 @@ void DrawInternalMoments(HDC hdc, RECT clientRect, const Beam& beam, StaticEquil
 
 	if (!innerMoments.empty())
 	{
-		
+
 		// Prevent division by zero for very small moments
 		if (maxMoment == 0) maxMoment = 1;
 

@@ -21,19 +21,24 @@ void AddMenus(HWND hWnd);
 
 void AddControls(HWND hWnd);
 
-//Crete beam
-Beam beam;
+struct Data {
 
-//Create force
-Force force;
+	//Crete beam
+	Beam beam;
 
-//Create uniform load
-UniformLoad uniformLoad;
+	//Create force
+	Force force;
 
-//Create moment
-Moment moment;
+	//Create uniform load
+	UniformLoad uniformLoad;
 
-StaticEquilibrium eq;
+	//Create moment
+	Moment moment;
+
+	StaticEquilibrium eq;
+
+};
+
 
 const wchar_t* const MAIN_WINDOW_CLASS = L"Simply supported beam";
 const wchar_t* const DESIGN_WINDOW_CLASS = L"Design";
@@ -80,14 +85,11 @@ int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrevInst, LPSTR args, int ncmdsho
 	if (!RegisterClass(&childClass2))
 		return -1;
 
-	//Cretae main window
-	HWND hMainWnd=CreateWindow(MAIN_WINDOW_CLASS, L"Simply supported beam", WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL, 100, 100, 1000, 950, 0, 0, 0, 0);
-	
-	//Create child window
-	hChildWnd = CreateWindow(DESIGN_WINDOW_CLASS, NULL, WS_VISIBLE | WS_CHILD, 450, 25, 500, 400, hMainWnd, NULL, hInst, NULL);
+	Data data;
 
-	//Create child window 2
-	hChildWnd2 = CreateWindow(MOMENTS_GRAPH_WINDOW_CLASS, NULL, WS_VISIBLE | WS_CHILD, 450, 450, 500, 400, hMainWnd, NULL, hInst, NULL);
+	//Cretae main window
+	HWND hMainWnd=CreateWindow(MAIN_WINDOW_CLASS, L"Simply supported beam", WS_OVERLAPPEDWINDOW | WS_VISIBLE | WS_HSCROLL | WS_VSCROLL, 100, 100, 1000, 950, 0, 0, hInst, &data);
+	
 
 
 	//Message loop
@@ -108,13 +110,36 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 	static int xPos = 0, yPos = 0;  // Position of the scrollbar
 	SCROLLINFO si = { 0 };
 	si.cbSize = sizeof(si);
+	
+	Data* data;
+	if (msg == WM_CREATE) {
+		// Extract AppData pointer from CREATESTRUCT
+		CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lp);
+		data = reinterpret_cast<Data*>(pCreate->lpCreateParams);
+
+		// Store the pointer in window's user data
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(data));
+
+		// Create child windows using CreateWindow
+		HWND hChildWnd = CreateWindow(DESIGN_WINDOW_CLASS, NULL, WS_VISIBLE | WS_CHILD,
+			450, 25, 500, 400, hWnd, (HMENU)IDC_CHILD1,
+			((LPCREATESTRUCT)lp)->hInstance, data);
+
+		HWND hChildWnd2 = CreateWindow(MOMENTS_GRAPH_WINDOW_CLASS, NULL, WS_VISIBLE | WS_CHILD,
+			450, 450, 500, 400, hWnd, (HMENU)IDC_CHILD2,
+			((LPCREATESTRUCT)lp)->hInstance, data);
+
+		// Handle other initialization (AddMenus, AddControls) here...
+		AddMenus(hWnd);
+		AddControls(hWnd);
+	}
+	else {
+		// Retrieve AppData pointer from user data
+		data = reinterpret_cast<Data*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+	}
 
 	switch (msg)
 	{
-		case WM_CREATE:
-			AddMenus(hWnd);
-			AddControls(hWnd);
-			break;
 
 		case WM_SIZE: 
 		{
@@ -175,153 +200,169 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 			UpdateWindow(hWnd);
 			break;
 		case WM_COMMAND:
+		{
+			HWND hChild1 = GetDlgItem(hWnd, IDC_CHILD1);
+			HWND hChild2 = GetDlgItem(hWnd, IDC_CHILD2);
+			WCHAR s[128];
 			switch (wp)
 			{
-				case ID_FILE_EXIT:
-					DestroyWindow(hWnd);
-					break;
-				case ID_HELP_ABOUT:
-					MessageBoxW(hWnd, L"This is a program that calculates the reactions on supports and internal forces for simply supported beams ", L"About", MB_OK | MB_ICONINFORMATION);
-					break;
-				case ID_ADD_BEAM:
-				{
-						wchar_t buffer[10];
-						GetWindowTextW(GetDlgItem(hWnd, IDC_EDIT_BEAM), buffer, 10);
-						beam.L = _wtof(buffer);
-						if (beam.L <= 0)
-						{
-							MessageBoxW(hWnd, L"Beam length cannot be zero or negative!", L"Error", MB_OK | MB_ICONERROR);
-						}
-
-
-						InvalidateRect(hChildWnd, NULL, TRUE);
-
-				}
-					break;
-				case ID_ADD_FORCE_Y:
-				{
-						wchar_t buffer[10];
-						GetWindowTextW(GetDlgItem(hWnd, IDC_EDIT_FORCE_Y), buffer, 10);
-						force.Fy = _wtof(buffer);
-						GetWindowTextW(GetDlgItem(hWnd, IDC_EDIT_FORCE_Y_POSITION), buffer, 10);
-						force.Fy_x = _wtof(buffer);
-						if (force.Fy_x > beam.L || force.Fy_x < 0)
-						{
-							MessageBoxW(hWnd, L"Position of force or moment cannot be outside the beam length!", L"Error", MB_OK | MB_ICONERROR);
-						}
-
-						// Trigger repaint of the child window to draw the force
-						InvalidateRect(hChildWnd, NULL, TRUE);
-
-
-				}
-					break;
-				case ID_ADD_FORCE_X:
-				{
-						wchar_t buffer[10];
-						GetWindowTextW(GetDlgItem(hWnd, IDC_EDIT_FORCE_X), buffer, 10);
-						force.Fx = _wtof(buffer);
-						GetWindowTextW(GetDlgItem(hWnd, IDC_EDIT_FORCE_X_POSITION), buffer, 10);
-						force.Fx_x = _wtof(buffer);
-						if (force.Fx_x > beam.L || force.Fx_x < 0)
-						{
-							MessageBoxW(hWnd, L"Position of force cannot be outside the beam length or negative!", L"Error", MB_OK | MB_ICONERROR);
-						}
-
-						// Trigger repaint of the child window to draw the force
-						InvalidateRect(hChildWnd, NULL, TRUE);
-
-
-				}
-					break;
-				case ID_ADD_MOMENT:
-				{
-						wchar_t buffer[10];
-						GetWindowTextW(GetDlgItem(hWnd, IDC_EDIT_MOMENT), buffer, 10);
-						moment.M = _wtof(buffer);
-						GetWindowTextW(GetDlgItem(hWnd, IDC_EDIT_MOMENT_POSITION), buffer, 10);
-						moment.x = _wtof(buffer);
-						if (moment.x > beam.L || moment.x < 0)
-						{
-							MessageBoxW(hWnd, L"Position of moment cannot be outside the beam length or negative!", L"Error", MB_OK | MB_ICONERROR);
-						}
-
-						// Trigger repaint of the child window to draw the moment
-						InvalidateRect(hChildWnd, NULL, TRUE);
-
-				}
-					break;
-				case ID_ADD_UNIFORM_LOAD:
-				{
-					wchar_t buffer[50];  
-
-					GetWindowTextW(GetDlgItem(hWnd, IDC_EDIT_UNIFORM_LOAD), buffer, 50);
-					uniformLoad.q = _wtof(buffer);
-
-					GetWindowTextW(GetDlgItem(hWnd, IDC_EDIT_UNIFORM_LOAD_X1_POSITION), buffer, 50);
-					uniformLoad.x1 = _wtof(buffer);
-
-					GetWindowTextW(GetDlgItem(hWnd, IDC_EDIT_UNIFORM_LOAD_X2_POSITION), buffer, 50);
-					uniformLoad.x2 = _wtof(buffer);
-
-					if (uniformLoad.x2 < uniformLoad.x1)
-					{
-						MessageBoxW(hWnd, L"Second position of uniform load cannot be smaller than the first position!", L"Error", MB_OK | MB_ICONERROR);
-					}
-					if (uniformLoad.x1 > beam.L)
-					{
-						MessageBoxW(hWnd, L"First position of uniform load cannot be outside the beam length!", L"Error", MB_OK | MB_ICONERROR);
-					}
-					if (uniformLoad.x1 < 0)
-					{
-						MessageBoxW(hWnd, L"First position of uniform load cannot be negative!", L"Error", MB_OK | MB_ICONERROR);
-					}
-					if (uniformLoad.x2 > beam.L)
-					{
-						MessageBoxW(hWnd, L"Second position of uniform load cannot be outside the beam length!", L"Error", MB_OK | MB_ICONERROR);
-					}
-					if (uniformLoad.x2 < 0)
-					{
-						MessageBoxW(hWnd, L"Second position of uniform load cannot be negative!", L"Error", MB_OK | MB_ICONERROR);
-					}
-
-					// Trigger repaint of the child window to draw uniform load
-					InvalidateRect(hChildWnd, NULL, TRUE);
-
-				}
-
-					break;
-				case ID_CALCULATE:
-				{
-					std::string FAx = std::format("{:.2f}",eq.reactionOnSupportAx(force));
-					std::wstring FAx_w(FAx.begin(), FAx.end());
-					std::string FAy = std::format("{:.2f}",eq.reactionOnSupportAy(beam, force, moment, uniformLoad));
-					std::wstring FAy_w(FAy.begin(), FAy.end());
-					std::string FBy = std::format("{:.2f}",eq.reactionOnSupportBy(beam, force, moment, uniformLoad));
-					std::wstring FBy_w(FBy.begin(), FBy.end());
-					eq.calcInternalMoment(beam, moment, force, uniformLoad);
-					const auto& internalMoments= eq.getInternalMoments();
-					double maxMoment = eq.getMaxMomentValue(internalMoments);
-					std::string maxMoment_s= std::format("{:.2f}", maxMoment);
-					std::wstring maxMoment_w(maxMoment_s.begin(), maxMoment_s.end());
-					SetWindowText(GetDlgItem(hWnd, IDC_RESULT_A_FX), FAx_w.c_str());
-					SetWindowText(GetDlgItem(hWnd, IDC_RESULT_A_FY), FAy_w.c_str());
-					SetWindowText(GetDlgItem(hWnd, IDC_RESULT_B_FY), FBy_w.c_str());
-					SetWindowText(GetDlgItem(hWnd, IDC_RESULT_MAX_MOMENT), maxMoment_w.c_str());
-
-
-					// Trigger repaint of the child window to draw the moment
-					InvalidateRect(hChildWnd2, NULL, TRUE);
-				}
+			case ID_FILE_EXIT:
+				DestroyWindow(hWnd);
 				break;
+			case ID_HELP_ABOUT:
+				::LoadString(0, IDS_HELP_ABOUT_TEXT, s, sizeof s);
+				::MessageBox(hWnd, s, L"About", MB_OK | MB_ICONINFORMATION);
+				break;
+			case ID_ADD_BEAM:
+			{
+				wchar_t buffer[10];
+				GetWindowText(GetDlgItem(hWnd, IDC_EDIT_BEAM), buffer, 10);
+				data->beam.L = _wtof(buffer);
+				if (data->beam.L <= 0)
+				{
+					::LoadString(0, IDS_ADD_BEAM_TEXT, s, sizeof s);
+					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+				}
+
+
+				InvalidateRect(hChildWnd, NULL, TRUE);
+
 			}
+			break;
+			case ID_ADD_FORCE_Y:
+			{
+				wchar_t buffer[10];
+				GetWindowText(GetDlgItem(hWnd, IDC_EDIT_FORCE_Y), buffer, 10);
+				data->force.Fy = _wtof(buffer);
+				GetWindowText(GetDlgItem(hWnd, IDC_EDIT_FORCE_Y_POSITION), buffer, 10);
+				data->force.Fy_x = _wtof(buffer);
+				if (data->force.Fy_x > data->beam.L || data->force.Fy_x < 0)
+				{
+					::LoadString(0, IDS_ADD_FORCE_Y_TEXT, s, sizeof s);
+					MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+				}
+
+				// Trigger repaint of the child window to draw the force
+				InvalidateRect(hChildWnd, NULL, TRUE);
+
+
+			}
+			break;
+			case ID_ADD_FORCE_X:
+			{
+				wchar_t buffer[10];
+				GetWindowText(GetDlgItem(hWnd, IDC_EDIT_FORCE_X), buffer, 10);
+				data->force.Fx = _wtof(buffer);
+				GetWindowText(GetDlgItem(hWnd, IDC_EDIT_FORCE_X_POSITION), buffer, 10);
+				data->force.Fx_x = _wtof(buffer);
+				if (data->force.Fx_x > data->beam.L || data->force.Fx_x < 0)
+				{
+					::LoadString(0, IDS_ADD_FORCE_X_TEXT, s, sizeof s);
+					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+				}
+
+				// Trigger repaint of the child window to draw the force
+				InvalidateRect(hChildWnd, NULL, TRUE);
+
+
+			}
+			break;
+			case ID_ADD_MOMENT:
+			{
+				wchar_t buffer[10];
+				GetWindowText(GetDlgItem(hWnd, IDC_EDIT_MOMENT), buffer, 10);
+				data->moment.M = _wtof(buffer);
+				GetWindowText(GetDlgItem(hWnd, IDC_EDIT_MOMENT_POSITION), buffer, 10);
+				data->moment.x = _wtof(buffer);
+				if (data->moment.x > data->beam.L || data->moment.x < 0)
+				{
+					::LoadString(0, IDS_ADD_MOMENT_TEXT, s, sizeof s);
+					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+				}
+
+				// Trigger repaint of the child window to draw the moment
+				InvalidateRect(hChildWnd, NULL, TRUE);
+
+			}
+			InvalidateRect(hChild1, NULL, TRUE);
+			break;
+			case ID_ADD_UNIFORM_LOAD:
+			{
+				wchar_t buffer[50];
+
+				GetWindowText(GetDlgItem(hWnd, IDC_EDIT_UNIFORM_LOAD), buffer, 50);
+				data->uniformLoad.q = _wtof(buffer);
+
+				GetWindowText(GetDlgItem(hWnd, IDC_EDIT_UNIFORM_LOAD_X1_POSITION), buffer, 50);
+				data->uniformLoad.x1 = _wtof(buffer);
+
+				GetWindowText(GetDlgItem(hWnd, IDC_EDIT_UNIFORM_LOAD_X2_POSITION), buffer, 50);
+				data->uniformLoad.x2 = _wtof(buffer);
+
+				if (data->uniformLoad.x2 < data->uniformLoad.x1)
+				{
+					::LoadString(0, IDS_ADD_UNIFORM_LOAD_X1_X2_POSITION_TEXT, s, sizeof s);
+					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+				}
+				if (data->uniformLoad.x1 > data->beam.L)
+				{
+					::LoadString(0, IDS_ADD_UNIFORM_LOAD_X1_POSITION_TEXT, s, sizeof s);
+					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+				}
+				if (data->uniformLoad.x1 < 0)
+				{
+					::LoadString(0, IDS_ADD_UNIFORM_LOAD_X1_NEGATIVE_TEXT, s, sizeof s);
+					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+				}
+				if (data->uniformLoad.x2 > data->beam.L)
+				{
+					::LoadString(0, IDS_ADD_UNIFORM_LOAD_X2_POSTION_TEXT, s, sizeof s);
+					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+				}
+				if (data->uniformLoad.x2 < 0)
+				{
+					::LoadString(0, IDS_ADD_UNIFORM_LOAD_X2_NEGATIVE_TEXT, s, sizeof s);
+					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+				}
+
+				// Trigger repaint of the child window to draw uniform load
+				InvalidateRect(hChildWnd, NULL, TRUE);
+
+			}
+
+			break;
+			case ID_CALCULATE:
+			{
+				std::wstring FAx = std::format(L"{:.2f}", data->eq.reactionOnSupportAx(data->force));
+
+				std::wstring FAy = std::format(L"{:.2f}", data->eq.reactionOnSupportAy(data->beam, data->force, data->moment, data->uniformLoad));
+
+				std::wstring FBy = std::format(L"{:.2f}", data->eq.reactionOnSupportBy(data->beam, data->force, data->moment, data->uniformLoad));
+
+				data->eq.calcInternalMoment(data->beam, data->moment, data->force, data->uniformLoad);
+				const auto& internalMoments = data->eq.getInternalMoments();
+				double maxMoment = data->eq.getMaxMomentValue(internalMoments);
+				std::wstring maxMoment_s = std::format(L"{:.2f}", maxMoment);
+
+				SetWindowText(GetDlgItem(hWnd, IDC_RESULT_A_FX), FAx.c_str());
+				SetWindowText(GetDlgItem(hWnd, IDC_RESULT_A_FY), FAy.c_str());
+				SetWindowText(GetDlgItem(hWnd, IDC_RESULT_B_FY), FBy.c_str());
+				SetWindowText(GetDlgItem(hWnd, IDC_RESULT_MAX_MOMENT), maxMoment_s.c_str());
+
+
+				// Trigger repaint of the child window to draw the moment
+				InvalidateRect(hChildWnd2, NULL, TRUE);
+			}
+			break;
+			}
+		}
 		break;
 
 		case WM_DESTROY:
 			PostQuitMessage(0);
 			break;
 		default:
-			return DefWindowProcW(hWnd, msg, wp, lp);
+			return DefWindowProc(hWnd, msg, wp, lp);
 	}
 
 	return 0;
@@ -330,54 +371,72 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 //Handle child window messages
 LRESULT CALLBACK Design(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-	
+	Data* data = reinterpret_cast<Data*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));  // Retrieve Data pointer
+
 	switch (msg)
 	{
-		case WM_PAINT:
-		{
-			
-			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(hWnd, &ps);
-			RECT clientRect;
-			GetClientRect(hWnd, &clientRect);
-			DrawBeamAndLoads(hdc, clientRect, beam, force, uniformLoad, moment);
-			EndPaint(hWnd, &ps);
-		}
-
-		break;
-	
-		default:
-			return DefWindowProcW(hWnd, msg, wp, lp);
-		}
-		return 0;
+	case WM_CREATE:
+	{
+		// Set the Data pointer to the window's user data
+		CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lp);
+		data = reinterpret_cast<Data*>(pCreate->lpCreateParams);
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(data));
 	}
+	break;
+
+	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hWnd, &ps);
+		RECT clientRect;
+		GetClientRect(hWnd, &clientRect);
+
+		// Now you can access the beam, force, uniformLoad, moment from `data`
+		DrawBeamAndLoads(hdc, clientRect, data->beam, data->force, data->uniformLoad, data->moment);
+
+		EndPaint(hWnd, &ps);
+	}
+	break;
+
+	default:
+		return DefWindowProc(hWnd, msg, wp, lp);
+	}
+	return 0;
+}
 
 //Handle child 2 window messages
 LRESULT CALLBACK GraphForInternalMoments(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+	Data* data = reinterpret_cast<Data*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));  // Retrieve Data pointer
+
 	switch (msg)
 	{
-		case WM_PAINT:
-		{
-			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(hWnd, &ps);
-			RECT clientRect;
-			GetClientRect(hWnd, &clientRect);
-			DrawInternalMoments(hdc, clientRect, beam, eq);
+	case WM_CREATE:
+	{
+		// Set the Data pointer to the window's user data
+		CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lp);
+		data = reinterpret_cast<Data*>(pCreate->lpCreateParams);
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(data));
+	}
+	break;
 
-			EndPaint(hWnd, &ps);
+	case WM_PAINT:
+	{
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hWnd, &ps);
+		RECT clientRect;
+		GetClientRect(hWnd, &clientRect);
 
-			
-		}
-		break;
-		default:
-		{
-			return DefWindowProcW(hWnd, msg, wp, lp);
-		}
-		
+		// Now you can access the beam and eq from `data`
+		DrawInternalMoments(hdc, clientRect, data->beam, data->eq);
+
+		EndPaint(hWnd, &ps);
+	}
+	break;
+
+	default:
+		return DefWindowProc(hWnd, msg, wp, lp);
 	}
 	return 0;
-
-
 }
 

@@ -5,7 +5,28 @@
 #define IDR_MENU1                       101
 #define ID_FILE_EXIT                    102
 #define ID_HELP_ABOUT                   103
-
+#define ID_ADD_BEAM                     201
+#define ID_ADD_FORCE_Y                  202
+#define ID_ADD_FORCE_X                  203
+#define ID_ADD_MOMENT                   204
+#define ID_ADD_UNIFORM_LOAD             205
+#define ID_CALCULATE                    206
+#define IDC_EDIT_BEAM                   207
+#define IDC_EDIT_FORCE_Y                208
+#define IDC_EDIT_FORCE_Y_POSITION       209
+#define IDC_EDIT_FORCE_X                210
+#define IDC_EDIT_FORCE_X_POSITION       211
+#define IDC_EDIT_MOMENT                 212
+#define IDC_EDIT_MOMENT_POSITION        213
+#define IDC_EDIT_UNIFORM_LOAD           214
+#define IDC_EDIT_UNIFORM_LOAD_X1_POSITION 215
+#define IDC_EDIT_UNIFORM_LOAD_X2_POSITION 216
+#define IDC_RESULT_A_FY                 217
+#define IDC_RESULT_A_FX                 218
+#define IDC_RESULT_B_FY                 219
+#define IDC_RESULT_MAX_MOMENT           220
+#define IDC_CHILD1						221
+#define IDC_CHILD2						222
 #define IDS_BEAM_LABEL                  301
 #define IDS_LENGTH_LABEL                302
 #define IDS_METER_LABEL                 303
@@ -28,38 +49,23 @@
 #define IDS_RESULT_HORIZONTAL_SUPPORT_A 320
 #define IDS_RESULT_VERTICAL_SUPPORT_B   321
 #define IDS_MAX_MOMENT_LABEL            322
-
-
-
-#define ID_ADD_BEAM 201
-#define ID_ADD_FORCE_Y 202
-#define ID_ADD_FORCE_X 203
-#define ID_ADD_MOMENT 204
-#define ID_ADD_UNIFORM_LOAD 205
-#define ID_CALCULATE 206
-
-
-#define IDC_EDIT_BEAM 207
-#define IDC_EDIT_FORCE_Y 208
-#define IDC_EDIT_FORCE_Y_POSITION 209
-#define IDC_EDIT_FORCE_X 210
-#define IDC_EDIT_FORCE_X_POSITION 211
-#define IDC_EDIT_MOMENT 212
-#define IDC_EDIT_MOMENT_POSITION 213
-#define IDC_EDIT_UNIFORM_LOAD 214
-#define IDC_EDIT_UNIFORM_LOAD_X1_POSITION 215
-#define IDC_EDIT_UNIFORM_LOAD_X2_POSITION 216
-#define IDC_RESULT_A_FY 217
-#define IDC_RESULT_A_FX 218
-#define IDC_RESULT_B_FY 219
-#define IDC_RESULT_MAX_MOMENT 220
-
+#define IDS_MENU_ERROR_LABEL            323
+#define IDS_HELP_ABOUT_TEXT             324
+#define IDS_ADD_BEAM_TEXT               325
+#define IDS_ADD_FORCE_Y_TEXT            326
+#define IDS_ADD_FORCE_X_TEXT            327
+#define IDS_ADD_MOMENT_TEXT             328
+#define IDS_ADD_UNIFORM_LOAD_X1_X2_POSITION_TEXT 329
+#define IDS_ADD_UNIFORM_LOAD_X1_POSITION_TEXT 330
+#define IDS_ADD_UNIFORM_LOAD_X1_NEGATIVE_TEXT 331
+#define IDS_ADD_UNIFORM_LOAD_X2_POSTION_TEXT 332
+#define IDS_ADD_UNIFORM_LOAD_X2_NEGATIVE_TEXT 333
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        103
+#define _APS_NEXT_RESOURCE_VALUE        104
 #define _APS_NEXT_COMMAND_VALUE         40003
 #define _APS_NEXT_CONTROL_VALUE         1001
 #define _APS_NEXT_SYMED_VALUE           101

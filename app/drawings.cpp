@@ -2,6 +2,7 @@
 #include <windows.h>
 #include "statika.h"
 #include <array>
+#include <format>
 
 using namespace statika;
 
@@ -47,7 +48,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 	triangleA[2].y = beamY + triangleHeight;
 
 	// Draw the triangle using the Polygon function
-	Polygon(hdc, triangleA.data(), 3);
+	Polygon(hdc, triangleA.data(), triangleA.size());
 
 	// Draw text above the triangle A
 	const wchar_t* supportText = L"A";
@@ -75,7 +76,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 	triangleB[2].y = beamY + triangleHeight;
 
 	// Draw the triangle using the Polygon function
-	Polygon(hdc, triangleB.data(), 3);
+	Polygon(hdc, triangleB.data(), triangleB.size());
 
 	// Draw text above the triangle
 	const wchar_t* supportTextB = L"B";
@@ -118,8 +119,8 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 	LineTo(hdc, margin + drawableLength, beamY + lineOffset - 5); // Draw upwards by 5 pixels
 
 	// Prepare a buffer to store the beam length as a wide string
-	wchar_t beamLengthText[50];
-	std::swprintf(beamLengthText, 50, L"%.2f m", beam.L);
+
+	std::wstring beamLengthText = std::format(L"{:.2f} m", beam.L);
 
 	// Draw the beam length text in the middle of the line
 	int textWidthLength = 50;  // Adjust this if needed based on the text length
@@ -130,7 +131,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 	int textYLength = beamY + lineOffset - textHeightLength; // Position the text above the line
 
 	// Output the beam length text
-	TextOutW(hdc, textXLength, textYLength, beamLengthText, wcslen(beamLengthText));
+	TextOutW(hdc, textXLength, textYLength, beamLengthText.c_str(), beamLengthText.length());
 
 	/*___________________________________________________________________________________________________________________________*/
 
@@ -168,8 +169,9 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 			//Draw text
 			int lineOffsetForceY = 40;  // Distance from the force where the text will be drawn
 			// Prepare a buffer to store the text of force
-			wchar_t forceYText[50];
-			std::swprintf(forceYText, 50, L"%.2f kN'", force.Fy);
+			
+			std::wstring forceYText = std::format(L"{:.2f} kN", force.Fy);
+			
 
 			// Draw the force text 
 			int textWidthForceYLength = 50;  // Adjust this if needed based on the text length
@@ -180,7 +182,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 			int textForceYYLength = beamY - lineOffsetForceY - textHeightForceYLength; // Position the text above 
 
 			// Output the force text
-			TextOutW(hdc, textForceYXLength, textForceYYLength, forceYText, wcslen(forceYText));
+			TextOutW(hdc, textForceYXLength, textForceYYLength, forceYText.c_str(), forceYText.length());
 		}
 		else {
 			arrowForceY[0].x = forceYPosition; // Top of the triangle (aligned with beam start)
@@ -199,8 +201,9 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 			//Draw text
 			int lineOffsetForceY = 40;  // Distance from the force where the text will be drawn
 			// Prepare a buffer to store the text of force
-			wchar_t forceYText[50];
-			std::swprintf(forceYText, 50, L"%.2f kN'", force.Fy);
+	
+			std::wstring forceYText = std::format(L"{:.2f} kN", force.Fy);
+		
 
 			// Draw the force text 
 			int textWidthForceYLength = 50;  // Adjust this if needed based on the text length
@@ -211,11 +214,11 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 			int textForceYYLength = beamY + lineOffsetForceY; // Position the text above 
 
 			// Output the force text
-			TextOutW(hdc, textForceYXLength, textForceYYLength, forceYText, wcslen(forceYText));
+			TextOutW(hdc, textForceYXLength, textForceYYLength, forceYText.c_str(), forceYText.length());
 		}
 
 		// Draw the arrow
-		Polygon(hdc, arrowForceY.data(), 3);
+		Polygon(hdc, arrowForceY.data(), arrowForceY.size());
 
 		//Draw the dimension line for force
 		// Draw a line beneath the beam
@@ -240,8 +243,10 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		LineTo(hdc, forceYPosition, beamY + lineOffsetFy_x + -5); // Draw upwards by 5 pixels
 
 		// Prepare a buffer to store the force dimension line as a wide string
-		wchar_t forceFy_xText[50];
-		std::swprintf(forceFy_xText, 50, L"%.2f m", force.Fy_x);
+
+		std::wstring forceFy_xText = std::format(L"{:.2f} m", force.Fy_x);
+
+		
 
 		// Draw the beam length text in the middle of the line
 		int textWidthLengthFy_x = 10;  // Adjust this if needed based on the text length
@@ -252,7 +257,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		int textYLengthFy_x = beamY + lineOffsetFy_x - textHeightLengthFy_x; // Position the text above the line
 
 		// Output the beam length text
-		TextOutW(hdc, textXLengthFy_x, textYLengthFy_x, forceFy_xText, wcslen(forceFy_xText));
+		TextOutW(hdc, textXLengthFy_x, textYLengthFy_x, forceFy_xText.c_str(), forceFy_xText.length());
 
 	}
 
@@ -302,12 +307,13 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		}
 
 		// Draw the horizontal force arrow
-		Polygon(hdc, arrowForceX.data(), 3);
+		Polygon(hdc, arrowForceX.data(), arrowForceX.size());
 
 		int lineOffsetForceX = 5;  // Distance from the force where the text will be drawn
 		// Prepare a buffer to store the text of force
-		wchar_t forceXText[50];
-		std::swprintf(forceXText, 50, L"%.2f kN'", force.Fx);
+		
+		std::wstring forceXText = std::format(L"{:.2f} m", force.Fx);
+
 
 		// Draw the force text 
 		int textWidthForceXLength = 50;  // Adjust this if needed based on the text length
@@ -318,7 +324,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		int textForceXYLength = beamY - lineOffsetForceX - textHeightForceXLength; // Position the text above 
 
 		// Output the force text
-		TextOutW(hdc, textForceXXLength, textForceXYLength, forceXText, wcslen(forceXText));
+		TextOutW(hdc, textForceXXLength, textForceXYLength, forceXText.c_str(), forceXText.length());
 
 
 		//Draw the dimension line for force
@@ -344,8 +350,9 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		LineTo(hdc, forceXPosition, beamY + lineOffsetFx_x + -5); // Draw upwards by 5 pixels
 
 		// Prepare a buffer to store the force dimension line as a wide string
-		wchar_t forceFx_xText[50];
-		std::swprintf(forceFx_xText, 50, L"%.2f m", force.Fx_x);
+
+		std::wstring forceFx_xText = std::format(L"{:.2f} m", force.Fx_x);
+		
 
 		// Draw the beam length text in the middle of the line
 		int textWidthLengthFx_x = 10;  // Adjust this if needed based on the text length
@@ -356,7 +363,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		int textYLengthFx_x = beamY + lineOffsetFx_x - textHeightLengthFx_x; // Position the text above the line
 
 		// Output the beam length text
-		TextOutW(hdc, textXLengthFx_x, textYLengthFx_x, forceFx_xText, wcslen(forceFx_xText));
+		TextOutW(hdc, textXLengthFx_x, textYLengthFx_x, forceFx_xText.c_str(), forceFx_xText.length());
 	}
 
 
@@ -417,12 +424,13 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		}
 
 		// Draw the arrowhead (triangle)
-		Polygon(hdc, arrowMoment.data(), 3);
+		Polygon(hdc, arrowMoment.data(), arrowMoment.size());
 
 		int lineOffsetMoment = 40;  // Distance from the moment where the text will be drawn
 		// Prepare a buffer to store the text of moment
-		wchar_t momentText[50];
-		std::swprintf(momentText, 50, L"%.2f kNm", moment.M);
+		
+		std::wstring momentText = std::format(L"{:.2f} kNm", moment.M);
+		
 
 		// Draw the moment text 
 		int textWidthMomentLength = 50;  // Adjust this if needed based on the text length
@@ -433,7 +441,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		int textMomentYLength = beamY - lineOffsetMoment - textHeightMomentLength; // Position the text above moment
 
 		// Output the moment text
-		TextOutW(hdc, textMomentXLength, textMomentYLength, momentText, wcslen(momentText));
+		TextOutW(hdc, textMomentXLength, textMomentYLength, momentText.c_str(), momentText.length());
 
 
 		//Draw the dimension line for moment
@@ -459,8 +467,9 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		LineTo(hdc, momentPosition, beamY + lineOffsetM_x + -5); // Draw upwards by 5 pixels
 
 		// Prepare a buffer to store the force dimension line as a wide string
-		wchar_t M_xText[50];
-		std::swprintf(M_xText, 50, L"%.2f m", moment.x);
+
+		std::wstring M_xText = std::format(L"{:.2f} m", moment.x);
+		
 
 		// Draw the beam length text in the middle of the line
 		int textWidthLengthM_x = 10;  // Adjust this if needed based on the text length
@@ -471,7 +480,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		int textYLengthM_x = beamY + lineOffsetM_x - textHeightLengthM_x; // Position the text above the line
 
 		// Output the beam length text
-		TextOutW(hdc, textXLengthM_x, textYLengthM_x, M_xText, wcslen(M_xText));
+		TextOutW(hdc, textXLengthM_x, textYLengthM_x, M_xText.c_str(), M_xText.length());
 
 	}
 
@@ -530,7 +539,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 			}
 
 			// Draw the arrow (triangle)
-			Polygon(hdc, arrowUniformLoad.data(), 3);
+			Polygon(hdc, arrowUniformLoad.data(), arrowUniformLoad.size());
 
 			// Move to the next section
 			counter += uniformLoadSection;
@@ -548,8 +557,9 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 			// Draw the uniform load text
 			int lineOffsetUL = 25;  // Distance from the moment where the text will be drawn
 			// Prepare a buffer to store the text of uniform load
-			wchar_t uniformLoadText[50];
-			std::swprintf(uniformLoadText, 50, L"%.2f kN/m'", uniformLoad.q);
+
+			std::wstring uniformLoadText = std::format(L"{:.2f} kN/m'", uniformLoad.q);
+
 
 			// Draw the uniform load text
 			int textWidthULLength = 50;  // Adjust this if needed based on the text length
@@ -560,7 +570,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 			int textULYLength = beamY - lineOffsetUL - textHeightULLength; // Position the text above the line
 
 			// Output the uniform load text
-			TextOutW(hdc, textULXLength, textULYLength, uniformLoadText, wcslen(uniformLoadText));
+			TextOutW(hdc, textULXLength, textULYLength, uniformLoadText.c_str(), uniformLoadText.length());
 
 		}
 		else
@@ -571,8 +581,9 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 			//Draw the uniform load text
 			int lineOffsetUL = 30;  // Distance from the moment where the text will be drawn
 			// Prepare a buffer to store the text of uniform load
-			wchar_t uniformLoadText[50];
-			std::swprintf(uniformLoadText, 50, L"%.2f kN/m'", uniformLoad.q);
+
+			std::wstring uniformLoadText = std::format(L"{:.2f} kN/m'", uniformLoad.q);
+
 
 			// Draw the uniform load text
 			int textWidthULLength = 50;  // Adjust this if needed based on the text length
@@ -583,7 +594,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 			int textULYLength = beamY + lineOffsetUL; // Position the text above the line
 
 			// Output the uniform load text
-			TextOutW(hdc, textULXLength, textULYLength, uniformLoadText, wcslen(uniformLoadText));
+			TextOutW(hdc, textULXLength, textULYLength, uniformLoadText.c_str(), uniformLoadText.length());
 		}
 
 		//Draw the dimension line for moment
@@ -619,10 +630,11 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		LineTo(hdc, uniformLoadX2, beamY + lineOffsetUL_y + -5); // Draw upwards by 5 pixels
 
 		// Prepare a buffer to store the force dimension line as a wide string
-		wchar_t UL_x1Text[50];
-		std::swprintf(UL_x1Text, 50, L"%.2f m", uniformLoad.x1);
-		wchar_t UL_x2Text[50];
-		std::swprintf(UL_x2Text, 50, L"%.2f m", uniformLoad.x2 - uniformLoad.x1);
+
+		std::wstring UL_x1Text = std::format(L"{:.2f} m", uniformLoad.x1);
+
+		std::wstring UL_x2Text = std::format(L"{:.2f} m", uniformLoad.x2- uniformLoad.x1);
+		
 
 		// Draw the text in the middle of the line
 		int textWidthLengthUL = 10;  // Adjust this if needed based on the text length
@@ -635,8 +647,8 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		int textYLengthUL_x2 = beamY + lineOffsetUL_y - textHeightLengthUL; // Position the text above the line
 
 		// Output the beam length text
-		TextOutW(hdc, textXLengthUL_x1, textYLengthUL_x1, UL_x1Text, wcslen(UL_x1Text));
-		TextOutW(hdc, textXLengthUL_x2, textYLengthUL_x2, UL_x2Text, wcslen(UL_x2Text));
+		TextOutW(hdc, textXLengthUL_x1, textYLengthUL_x1, UL_x1Text.c_str(), UL_x1Text.length());
+		TextOutW(hdc, textXLengthUL_x2, textYLengthUL_x2, UL_x2Text.c_str(), UL_x2Text.length());
 
 	}
 }
@@ -692,7 +704,7 @@ void DrawInternalMoments(HDC hdc, RECT clientRect, const Beam& beam, StaticEquil
 	triangleA[2].y = beamY + triangleHeight;
 
 	// Draw the triangle using the Polygon function
-	Polygon(hdc, triangleA.data(), 3);
+	Polygon(hdc, triangleA.data(), triangleA.size());
 
 	// Draw text above the triangle A
 	const wchar_t* supportText = L"A";
@@ -720,7 +732,7 @@ void DrawInternalMoments(HDC hdc, RECT clientRect, const Beam& beam, StaticEquil
 	triangleB[2].y = beamY + triangleHeight;
 
 	// Draw the triangle using the Polygon function
-	Polygon(hdc, triangleB.data(), 3);
+	Polygon(hdc, triangleB.data(), triangleB.size());
 
 	// Draw text above the triangle
 	const wchar_t* supportTextB = L"B";

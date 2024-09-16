@@ -6,13 +6,15 @@
 void AddMenus(HWND hWnd) {
 	// Load the menu from the resource file
 	HMENU hMenu = LoadMenu(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MENU1));
+	WCHAR s[128];
 
 	if (hMenu) {
 		// Set the menu to the window
 		SetMenu(hWnd, hMenu);
 	}
 	else {
-		MessageBox(hWnd, L"Menu could not be loaded!", L"Error", MB_OK | MB_ICONERROR);
+		::LoadString(0, IDS_MENU_ERROR_LABEL, s, sizeof s);
+		::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
 	}
 }
 
@@ -34,7 +36,7 @@ void AddControls(HWND hWnd) {
 	::CreateWindow(L"static", s, WS_VISIBLE | WS_CHILD, 25, 75, 100, 25, hWnd, NULL, NULL, NULL);
 
 	// Create the "edit" control for beam length
-	::CreateWindow(L"edit", L"", WS_VISIBLE | WS_CHILD | WS_BORDER, 125, 70, 75, 25, hWnd, (HMENU)IDC_EDIT_BEAM, NULL, NULL);
+	::CreateWindow(L"edit", L"0", WS_VISIBLE | WS_CHILD | WS_BORDER, 125, 70, 75, 25, hWnd, (HMENU)IDC_EDIT_BEAM, NULL, NULL);
 	
 	// Load and create the "m" static label
 	::LoadString(0, IDS_METER_LABEL, s, sizeof s);
@@ -157,6 +159,6 @@ void AddControls(HWND hWnd) {
 	::CreateWindow(L"static", s, WS_VISIBLE | WS_CHILD, 25, 700, 100, 25, hWnd, NULL, NULL, NULL);
 	::CreateWindow(L"static", L"", WS_VISIBLE | WS_CHILD, 150, 700, 50, 25, hWnd, (HMENU)IDC_RESULT_MAX_MOMENT, NULL, NULL);
 	::LoadString(0, IDS_MOMENT_UNIT_LABEL, s, sizeof s);
-	::CreateWindow(L"static", L"kNm", WS_VISIBLE | WS_CHILD, 210, 700, 35, 25, hWnd, NULL, NULL, NULL);
+	::CreateWindow(L"static", s, WS_VISIBLE | WS_CHILD, 210, 700, 35, 25, hWnd, NULL, NULL, NULL);
 
 }

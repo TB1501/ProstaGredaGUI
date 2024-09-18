@@ -60,7 +60,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 	int textY = beamY; // Position it above the beam and triangle
 
 	// Output the text
-	TextOutW(hdc, textX, textY, supportText, wcslen(supportText));
+	TextOut(hdc, textX, textY, supportText, wcslen(supportText));
 
 	// Support B
 	std::array<POINT,3> triangleB;
@@ -88,7 +88,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 	int textYB = beamY;
 
 	// Output the text 
-	TextOutW(hdc, textXB, textYB, supportTextB, wcslen(supportTextB));
+	TextOut(hdc, textXB, textYB, supportTextB, wcslen(supportTextB));
 
 	// Draw an underline beneath the second triangle
 	MoveToEx(hdc, endX - triangleBase / 2, beamY + triangleHeight + 5, NULL); // Start point of the underline
@@ -131,7 +131,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 	int textYLength = beamY + lineOffset - textHeightLength; // Position the text above the line
 
 	// Output the beam length text
-	TextOutW(hdc, textXLength, textYLength, beamLengthText.c_str(), beamLengthText.length());
+	TextOut(hdc, textXLength, textYLength, beamLengthText.c_str(), beamLengthText.length());
 
 	/*___________________________________________________________________________________________________________________________*/
 
@@ -182,7 +182,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 			int textForceYYLength = beamY - lineOffsetForceY - textHeightForceYLength; // Position the text above 
 
 			// Output the force text
-			TextOutW(hdc, textForceYXLength, textForceYYLength, forceYText.c_str(), forceYText.length());
+			TextOut(hdc, textForceYXLength, textForceYYLength, forceYText.c_str(), forceYText.length());
 		}
 		else {
 			arrowForceY[0].x = forceYPosition; // Top of the triangle (aligned with beam start)
@@ -214,7 +214,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 			int textForceYYLength = beamY + lineOffsetForceY; // Position the text above 
 
 			// Output the force text
-			TextOutW(hdc, textForceYXLength, textForceYYLength, forceYText.c_str(), forceYText.length());
+			TextOut(hdc, textForceYXLength, textForceYYLength, forceYText.c_str(), forceYText.length());
 		}
 
 		// Draw the arrow
@@ -257,7 +257,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		int textYLengthFy_x = beamY + lineOffsetFy_x - textHeightLengthFy_x; // Position the text above the line
 
 		// Output the beam length text
-		TextOutW(hdc, textXLengthFy_x, textYLengthFy_x, forceFy_xText.c_str(), forceFy_xText.length());
+		TextOut(hdc, textXLengthFy_x, textYLengthFy_x, forceFy_xText.c_str(), forceFy_xText.length());
 
 	}
 
@@ -324,7 +324,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		int textForceXYLength = beamY - lineOffsetForceX - textHeightForceXLength; // Position the text above 
 
 		// Output the force text
-		TextOutW(hdc, textForceXXLength, textForceXYLength, forceXText.c_str(), forceXText.length());
+		TextOut(hdc, textForceXXLength, textForceXYLength, forceXText.c_str(), forceXText.length());
 
 
 		//Draw the dimension line for force
@@ -363,7 +363,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		int textYLengthFx_x = beamY + lineOffsetFx_x - textHeightLengthFx_x; // Position the text above the line
 
 		// Output the beam length text
-		TextOutW(hdc, textXLengthFx_x, textYLengthFx_x, forceFx_xText.c_str(), forceFx_xText.length());
+		TextOut(hdc, textXLengthFx_x, textYLengthFx_x, forceFx_xText.c_str(), forceFx_xText.length());
 	}
 
 
@@ -441,7 +441,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		int textMomentYLength = beamY - lineOffsetMoment - textHeightMomentLength; // Position the text above moment
 
 		// Output the moment text
-		TextOutW(hdc, textMomentXLength, textMomentYLength, momentText.c_str(), momentText.length());
+		TextOut(hdc, textMomentXLength, textMomentYLength, momentText.c_str(), momentText.length());
 
 
 		//Draw the dimension line for moment
@@ -480,7 +480,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		int textYLengthM_x = beamY + lineOffsetM_x - textHeightLengthM_x; // Position the text above the line
 
 		// Output the beam length text
-		TextOutW(hdc, textXLengthM_x, textYLengthM_x, M_xText.c_str(), M_xText.length());
+		TextOut(hdc, textXLengthM_x, textYLengthM_x, M_xText.c_str(), M_xText.length());
 
 	}
 
@@ -570,7 +570,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 			int textULYLength = beamY - lineOffsetUL - textHeightULLength; // Position the text above the line
 
 			// Output the uniform load text
-			TextOutW(hdc, textULXLength, textULYLength, uniformLoadText.c_str(), uniformLoadText.length());
+			TextOut(hdc, textULXLength, textULYLength, uniformLoadText.c_str(), uniformLoadText.length());
 
 		}
 		else
@@ -594,7 +594,7 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 			int textULYLength = beamY + lineOffsetUL; // Position the text above the line
 
 			// Output the uniform load text
-			TextOutW(hdc, textULXLength, textULYLength, uniformLoadText.c_str(), uniformLoadText.length());
+			TextOut(hdc, textULXLength, textULYLength, uniformLoadText.c_str(), uniformLoadText.length());
 		}
 
 		//Draw the dimension line for moment
@@ -647,8 +647,8 @@ void DrawBeamAndLoads(HDC hdc, RECT clientRect, const Beam& beam, const Force& f
 		int textYLengthUL_x2 = beamY + lineOffsetUL_y - textHeightLengthUL; // Position the text above the line
 
 		// Output the beam length text
-		TextOutW(hdc, textXLengthUL_x1, textYLengthUL_x1, UL_x1Text.c_str(), UL_x1Text.length());
-		TextOutW(hdc, textXLengthUL_x2, textYLengthUL_x2, UL_x2Text.c_str(), UL_x2Text.length());
+		TextOut(hdc, textXLengthUL_x1, textYLengthUL_x1, UL_x1Text.c_str(), UL_x1Text.length());
+		TextOut(hdc, textXLengthUL_x2, textYLengthUL_x2, UL_x2Text.c_str(), UL_x2Text.length());
 
 	}
 }
@@ -716,7 +716,7 @@ void DrawInternalMoments(HDC hdc, RECT clientRect, const Beam& beam, StaticEquil
 	int textY = beamY; // Position it above the beam and triangle
 
 	// Output the text
-	TextOutW(hdc, textX, textY, supportText, wcslen(supportText));
+	TextOut(hdc, textX, textY, supportText, wcslen(supportText));
 
 	// Support B
 	std::array<POINT,3> triangleB;
@@ -744,7 +744,7 @@ void DrawInternalMoments(HDC hdc, RECT clientRect, const Beam& beam, StaticEquil
 	int textYB = beamY;
 
 	// Output the text 
-	TextOutW(hdc, textXB, textYB, supportTextB, wcslen(supportTextB));
+	TextOut(hdc, textXB, textYB, supportTextB, wcslen(supportTextB));
 
 	// Draw an underline beneath the second triangle
 	MoveToEx(hdc, endX - triangleBase / 2, beamY + triangleHeight + 5, NULL); // Start point of the underline

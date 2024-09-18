@@ -7,6 +7,7 @@ void AddMenus(HWND hWnd) {
 	// Load the menu from the resource file
 	HMENU hMenu = LoadMenu(GetModuleHandle(NULL), MAKEINTRESOURCE(IDR_MENU1));
 	WCHAR s[128];
+	WCHAR label[128];
 
 	if (hMenu) {
 		// Set the menu to the window
@@ -14,7 +15,8 @@ void AddMenus(HWND hWnd) {
 	}
 	else {
 		::LoadString(0, IDS_MENU_ERROR_LABEL, s, sizeof s);
-		::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+		::LoadString(0, IDS_ADD_BEAM_ERROR_SHORT_TEXT, label, sizeof label);
+		::MessageBox(hWnd, s, label, MB_OK | MB_ICONERROR);
 	}
 }
 
@@ -52,7 +54,7 @@ void AddControls(HWND hWnd) {
 
 
 	::LoadString(0, IDS_LOAD_LABEL, s, sizeof s);
-	::CreateWindowW(L"static", s, WS_VISIBLE | WS_CHILD, 25, 130, 100, 25, hWnd, NULL, NULL, NULL);
+	::CreateWindow(L"static", s, WS_VISIBLE | WS_CHILD, 25, 130, 100, 25, hWnd, NULL, NULL, NULL);
 	::CreateWindow(L"static", NULL, WS_VISIBLE | WS_CHILD | SS_ETCHEDHORZ, 15, 155, 350, 25, hWnd, NULL, NULL, NULL);
 
 	//Force
@@ -91,19 +93,19 @@ void AddControls(HWND hWnd) {
 
 	//Moment
 	::LoadString(0, IDS_MOMENT_LABEL, s, sizeof s);
-	::CreateWindowW(L"static", s, WS_VISIBLE | WS_CHILD, 25, 350, 125, 25, hWnd, NULL, NULL, NULL);
+	::CreateWindow(L"static", s, WS_VISIBLE | WS_CHILD, 25, 350, 125, 25, hWnd, NULL, NULL, NULL);
 	::LoadString(0, IDS_MAGNITUDE_LABEL, s, sizeof s); 
-	::CreateWindowW(L"static", s, WS_VISIBLE | WS_CHILD, 25, 375, 100, 25, hWnd, NULL, NULL, NULL);
-	::CreateWindowW(L"edit", L"0", WS_VISIBLE | WS_CHILD | WS_BORDER, 125, 370, 75, 25, hWnd, (HMENU)IDC_EDIT_MOMENT, NULL, NULL);
+	::CreateWindow(L"static", s, WS_VISIBLE | WS_CHILD, 25, 375, 100, 25, hWnd, NULL, NULL, NULL);
+	::CreateWindow(L"edit", L"0", WS_VISIBLE | WS_CHILD | WS_BORDER, 125, 370, 75, 25, hWnd, (HMENU)IDC_EDIT_MOMENT, NULL, NULL);
 	::LoadString(0, IDS_MOMENT_UNIT_LABEL, s, sizeof s);
-	::CreateWindowW(L"static", s, WS_VISIBLE | WS_CHILD, 210, 375, 40, 25, hWnd, NULL, NULL, NULL);
+	::CreateWindow(L"static", s, WS_VISIBLE | WS_CHILD, 210, 375, 40, 25, hWnd, NULL, NULL, NULL);
 	::LoadString(0, IDS_FORCE_POSITION, s, sizeof s);
-	::CreateWindowW(L"static", s, WS_VISIBLE | WS_CHILD, 25, 405, 100, 25, hWnd, NULL, NULL, NULL);
-	::CreateWindowW(L"edit", L"0", WS_VISIBLE | WS_CHILD | WS_BORDER, 125, 400, 75, 25, hWnd, (HMENU)IDC_EDIT_MOMENT_POSITION, NULL, NULL);
+	::CreateWindow(L"static", s, WS_VISIBLE | WS_CHILD, 25, 405, 100, 25, hWnd, NULL, NULL, NULL);
+	::CreateWindow(L"edit", L"0", WS_VISIBLE | WS_CHILD | WS_BORDER, 125, 400, 75, 25, hWnd, (HMENU)IDC_EDIT_MOMENT_POSITION, NULL, NULL);
 	::LoadString(0, IDS_METER_LABEL, s, sizeof s);
-	::CreateWindowW(L"static", s, WS_VISIBLE | WS_CHILD, 210, 405, 40, 25, hWnd, NULL, NULL, NULL);
+	::CreateWindow(L"static", s, WS_VISIBLE | WS_CHILD, 210, 405, 40, 25, hWnd, NULL, NULL, NULL);
 	::LoadString(0, IDS_SET_BUTTON, s, sizeof s);
-	::CreateWindowW(L"button", s, WS_VISIBLE | WS_CHILD, 260, 385, 80, 25, hWnd, (HMENU)ID_ADD_MOMENT, NULL, NULL);
+	::CreateWindow(L"button", s, WS_VISIBLE | WS_CHILD, 260, 385, 80, 25, hWnd, (HMENU)ID_ADD_MOMENT, NULL, NULL);
 
 
 
@@ -123,7 +125,7 @@ void AddControls(HWND hWnd) {
 	::LoadString(0, IDS_METER_LABEL, s, sizeof s);
 	::CreateWindow(L"static", s, WS_VISIBLE | WS_CHILD, 210, 490, 40, 25, hWnd, NULL, NULL, NULL);
 	::LoadString(0, IDS_UNIFORM_LOAD_POSITION_X2, s, sizeof s);
-	::CreateWindowW(L"static", s, WS_VISIBLE | WS_CHILD, 25, 520, 100, 25, hWnd, NULL, NULL, NULL);
+	::CreateWindow(L"static", s, WS_VISIBLE | WS_CHILD, 25, 520, 100, 25, hWnd, NULL, NULL, NULL);
 	::CreateWindow(L"edit", L"0", WS_VISIBLE | WS_CHILD | WS_BORDER, 125, 515, 75, 25, hWnd, (HMENU)IDC_EDIT_UNIFORM_LOAD_X2_POSITION, NULL, NULL);
 	::LoadString(0, IDS_METER_LABEL, s, sizeof s);
 	::CreateWindow(L"static", s, WS_VISIBLE | WS_CHILD, 210, 520, 40, 25, hWnd, NULL, NULL, NULL);

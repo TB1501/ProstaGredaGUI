@@ -25,8 +25,8 @@
 #define IDC_RESULT_A_FX                 218
 #define IDC_RESULT_B_FY                 219
 #define IDC_RESULT_MAX_MOMENT           220
-#define IDC_CHILD1						221
-#define IDC_CHILD2						222
+#define IDC_CHILD1                      221
+#define IDC_CHILD2                      222
 #define IDS_BEAM_LABEL                  301
 #define IDS_LENGTH_LABEL                302
 #define IDS_METER_LABEL                 303
@@ -60,6 +60,8 @@
 #define IDS_ADD_UNIFORM_LOAD_X1_NEGATIVE_TEXT 331
 #define IDS_ADD_UNIFORM_LOAD_X2_POSTION_TEXT 332
 #define IDS_ADD_UNIFORM_LOAD_X2_NEGATIVE_TEXT 333
+#define IDS_HELP_ABOUT_LABEL_TEXT       334
+#define IDS_ADD_BEAM_ERROR_SHORT_TEXT   335
 
 // Next default values for new objects
 // 

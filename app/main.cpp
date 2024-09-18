@@ -2,6 +2,7 @@
 #include "statika.h"
 #include "controls.h"
 #include "drawings.h"
+#include "nwpwin.h"
 #include <windows.h>
 #include<windowsx.h>
 #include <vector>
@@ -14,8 +15,6 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 LRESULT CALLBACK Design(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 LRESULT CALLBACK GraphForInternalMoments(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp);
 
-HWND hChildWnd;
-HWND hChildWnd2;
 
 void AddMenus(HWND hWnd);
 
@@ -23,6 +22,7 @@ void AddControls(HWND hWnd);
 
 struct Data {
 
+	HINSTANCE hInst;
 	//Crete beam
 	Beam beam;
 
@@ -36,6 +36,9 @@ struct Data {
 	Moment moment;
 
 	StaticEquilibrium eq;
+
+	HWND hChildWnd;
+	HWND hChildWnd2;
 
 };
 
@@ -121,11 +124,11 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 		SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(data));
 
 		// Create child windows using CreateWindow
-		HWND hChildWnd = CreateWindow(DESIGN_WINDOW_CLASS, NULL, WS_VISIBLE | WS_CHILD,
+		data->hChildWnd = CreateWindow(DESIGN_WINDOW_CLASS, NULL, WS_VISIBLE | WS_CHILD,
 			450, 25, 500, 400, hWnd, (HMENU)IDC_CHILD1,
 			((LPCREATESTRUCT)lp)->hInstance, data);
 
-		HWND hChildWnd2 = CreateWindow(MOMENTS_GRAPH_WINDOW_CLASS, NULL, WS_VISIBLE | WS_CHILD,
+		data-> hChildWnd2 = CreateWindow(MOMENTS_GRAPH_WINDOW_CLASS, NULL, WS_VISIBLE | WS_CHILD,
 			450, 450, 500, 400, hWnd, (HMENU)IDC_CHILD2,
 			((LPCREATESTRUCT)lp)->hInstance, data);
 
@@ -204,6 +207,7 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 			HWND hChild1 = GetDlgItem(hWnd, IDC_CHILD1);
 			HWND hChild2 = GetDlgItem(hWnd, IDC_CHILD2);
 			WCHAR s[128];
+			WCHAR label[128];
 			switch (wp)
 			{
 			case ID_FILE_EXIT:
@@ -211,7 +215,11 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 				break;
 			case ID_HELP_ABOUT:
 				::LoadString(0, IDS_HELP_ABOUT_TEXT, s, sizeof s);
-				::MessageBox(hWnd, s, L"About", MB_OK | MB_ICONINFORMATION);
+				::LoadString(0, IDS_HELP_ABOUT_LABEL_TEXT, s, sizeof s);
+				::MessageBox(hWnd, s, label, MB_OK | MB_ICONINFORMATION);
+				//std::wstring message= loadString(data->hInst, IDS_HELP_ABOUT_TEXT);
+				//std::wstring title = loadString(data->hInst, IDS_HELP_ABOUT_LABEL_TEXT);
+				//::MessageBox(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONINFORMATION);
 				break;
 			case ID_ADD_BEAM:
 			{
@@ -221,11 +229,15 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 				if (data->beam.L <= 0)
 				{
 					::LoadString(0, IDS_ADD_BEAM_TEXT, s, sizeof s);
-					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+					::LoadString(0, IDS_ADD_BEAM_ERROR_SHORT_TEXT, label, sizeof label);
+					::MessageBox(hWnd, s, label, MB_OK | MB_ICONERROR);
+					//std::wstring message = loadString(data->hInst, IDS_ADD_BEAM_TEXT);
+					//std::wstring title = loadString(data->hInst, IDS_ADD_BEAM_ERROR_SHORT_TEXT);
+					//::MessageBox(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
 				}
 
 
-				InvalidateRect(hChildWnd, NULL, TRUE);
+				InvalidateRect(data ->hChildWnd, NULL, TRUE);
 
 			}
 			break;
@@ -239,11 +251,15 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 				if (data->force.Fy_x > data->beam.L || data->force.Fy_x < 0)
 				{
 					::LoadString(0, IDS_ADD_FORCE_Y_TEXT, s, sizeof s);
-					MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+					::LoadString(0, IDS_ADD_BEAM_ERROR_SHORT_TEXT, label, sizeof label);
+					MessageBox(hWnd, s, label, MB_OK | MB_ICONERROR);
+					//std::wstring message = loadString(data->hInst, IDS_ADD_FORCE_Y_TEXT);
+					//std::wstring title = loadString(data->hInst, IDS_ADD_BEAM_ERROR_SHORT_TEXT);
+					//MessageBox(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
 				}
 
 				// Trigger repaint of the child window to draw the force
-				InvalidateRect(hChildWnd, NULL, TRUE);
+				InvalidateRect(data->hChildWnd, NULL, TRUE);
 
 
 			}
@@ -257,12 +273,16 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 				data->force.Fx_x = _wtof(buffer);
 				if (data->force.Fx_x > data->beam.L || data->force.Fx_x < 0)
 				{
-					::LoadString(0, IDS_ADD_FORCE_X_TEXT, s, sizeof s);
-					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+					//::LoadString(0, IDS_ADD_FORCE_X_TEXT, s, sizeof s);
+					//::LoadString(0, IDS_ADD_BEAM_ERROR_SHORT_TEXT, label, sizeof label);
+					::MessageBox(hWnd, s, label, MB_OK | MB_ICONERROR);
+					//std::wstring message = loadString(data->hInst, IDS_ADD_FORCE_X_TEXT);
+					//std::wstring title = loadString(data->hInst, IDS_ADD_BEAM_ERROR_SHORT_TEXT);
+					//::MessageBox(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
 				}
 
 				// Trigger repaint of the child window to draw the force
-				InvalidateRect(hChildWnd, NULL, TRUE);
+				InvalidateRect(data->hChildWnd, NULL, TRUE);
 
 
 			}
@@ -277,11 +297,15 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 				if (data->moment.x > data->beam.L || data->moment.x < 0)
 				{
 					::LoadString(0, IDS_ADD_MOMENT_TEXT, s, sizeof s);
-					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+					::LoadString(0, IDS_ADD_BEAM_ERROR_SHORT_TEXT, label, sizeof label);
+					::MessageBox(hWnd, s, label, MB_OK | MB_ICONERROR);
+					//std::wstring message = loadString(data->hInst, IDS_ADD_MOMENT_TEXT);
+					//std::wstring title = loadString(data->hInst, IDS_ADD_BEAM_ERROR_SHORT_TEXT);
+					//::MessageBox(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
 				}
 
 				// Trigger repaint of the child window to draw the moment
-				InvalidateRect(hChildWnd, NULL, TRUE);
+				InvalidateRect(data->hChildWnd, NULL, TRUE);
 
 			}
 			InvalidateRect(hChild1, NULL, TRUE);
@@ -302,31 +326,52 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 				if (data->uniformLoad.x2 < data->uniformLoad.x1)
 				{
 					::LoadString(0, IDS_ADD_UNIFORM_LOAD_X1_X2_POSITION_TEXT, s, sizeof s);
-					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+					::LoadString(0, IDS_ADD_BEAM_ERROR_SHORT_TEXT, label, sizeof label);
+					::MessageBox(hWnd, s, label, MB_OK | MB_ICONERROR);
+					//std::wstring message = loadString(data->hInst, IDS_ADD_UNIFORM_LOAD_X1_X2_POSITION_TEXT);
+					//std::wstring title = loadString(data->hInst, IDS_ADD_BEAM_ERROR_SHORT_TEXT);
+
+					//::MessageBox(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
 				}
 				if (data->uniformLoad.x1 > data->beam.L)
 				{
 					::LoadString(0, IDS_ADD_UNIFORM_LOAD_X1_POSITION_TEXT, s, sizeof s);
-					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+					::LoadString(0, IDS_ADD_BEAM_ERROR_SHORT_TEXT, label, sizeof label);
+					::MessageBox(hWnd, s, label, MB_OK | MB_ICONERROR);
+					//std::wstring message = loadString(data->hInst, IDS_ADD_UNIFORM_LOAD_X1_POSITION_TEXT);
+					//std::wstring title = loadString(data->hInst, IDS_ADD_BEAM_ERROR_SHORT_TEXT);
+					//::MessageBox(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
 				}
 				if (data->uniformLoad.x1 < 0)
 				{
 					::LoadString(0, IDS_ADD_UNIFORM_LOAD_X1_NEGATIVE_TEXT, s, sizeof s);
-					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+					::LoadString(0, IDS_ADD_BEAM_ERROR_SHORT_TEXT, label, sizeof label);
+					::MessageBox(hWnd, s, label, MB_OK | MB_ICONERROR);
+					//std::wstring message = loadString(data->hInst, IDS_ADD_UNIFORM_LOAD_X1_NEGATIVE_TEXT);
+					//std::wstring title = loadString(data->hInst, IDS_ADD_BEAM_ERROR_SHORT_TEXT);
+					//::MessageBox(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
 				}
 				if (data->uniformLoad.x2 > data->beam.L)
 				{
 					::LoadString(0, IDS_ADD_UNIFORM_LOAD_X2_POSTION_TEXT, s, sizeof s);
-					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+					::LoadString(0, IDS_ADD_BEAM_ERROR_SHORT_TEXT, label, sizeof label);
+					::MessageBox(hWnd, s, label, MB_OK | MB_ICONERROR);
+					//std::wstring message = loadString(data->hInst, IDS_ADD_UNIFORM_LOAD_X2_POSTION_TEXT);
+					//std::wstring title = loadString(data->hInst, IDS_ADD_BEAM_ERROR_SHORT_TEXT);
+					//::MessageBox(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
 				}
 				if (data->uniformLoad.x2 < 0)
 				{
 					::LoadString(0, IDS_ADD_UNIFORM_LOAD_X2_NEGATIVE_TEXT, s, sizeof s);
-					::MessageBox(hWnd, s, L"Error", MB_OK | MB_ICONERROR);
+					::LoadString(0, IDS_ADD_BEAM_ERROR_SHORT_TEXT, label, sizeof label);
+					::MessageBox(hWnd, s, label, MB_OK | MB_ICONERROR);
+					//std::wstring message = loadString(data->hInst, IDS_ADD_UNIFORM_LOAD_X2_NEGATIVE_TEXT);
+					//std::wstring title = loadString(data->hInst, IDS_ADD_BEAM_ERROR_SHORT_TEXT);
+					//::MessageBox(hWnd, message.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
 				}
 
 				// Trigger repaint of the child window to draw uniform load
-				InvalidateRect(hChildWnd, NULL, TRUE);
+				InvalidateRect(data->hChildWnd, NULL, TRUE);
 
 			}
 
@@ -351,7 +396,7 @@ LRESULT CALLBACK WindowProcedure(HWND hWnd, UINT msg, WPARAM wp, LPARAM lp)
 
 
 				// Trigger repaint of the child window to draw the moment
-				InvalidateRect(hChildWnd2, NULL, TRUE);
+				InvalidateRect(data->hChildWnd2, NULL, TRUE);
 			}
 			break;
 			}
